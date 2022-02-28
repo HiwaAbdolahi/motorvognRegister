@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="en">
+            <script src="https://code.jquery.com/jquery-3.6.0.js"></script>
+<head>
+    <meta charset="UTF-8">
+    <title>Motorvogn</title>
+
+
+</head>
+<body>
+
+<h1>Motorvognregister</h1>
+
+<table>
+    <tr>
+        <th>Eiers personnummer</th>
+        <th>Eiers navn</th>
+        <th>Eiers adresse</th>
+    </tr>
+    <tr>
+        <th><input type="text" id="personNr"></th>
+        <th><input type="text" id="navn"></th>
+        <th><input type="text" id="adresse"></th>
+    </tr>
+    <tr>
+        <th>Kjennetegn</th>
+        <th>Bilmerke</th>
+        <th>Biltype</th>
+    </tr>
+    <tr>
+        <th><input type="text" id="kjennetegn"></th>
+        <th><input type="text" id="bilmarke"></th>
+        <th><input type="text" id="biltype"></th>
+    </tr>
+</table>
+
+<button id="kjør" onclick="regBil();">Register</button>
+<div>Alle Bilene:</div>
+<div id="utListe"></div>
+
+<button id="slett">Slett alle</button>
+
+
+
+        <script type="application/javascript">
+
+            function regBil() {
+                alert("hei")
+                const enBil = {
+                    personNr : $("#personNr").val(),
+                    navn : $("#navn").val(),
+                    adresse : $("#adresse").val(),
+                    kjennetegn : $("#kjennetegn").val(),
+                    merke : $("#bilmarke").val(),
+                     type : $("#biltype").val()
+                };
+                $.post("/lagre",enBil,function (){
+                    hentAlle();
+                });
+                $("#navn").val("");
+                $("#adresse").val("");
+                $("#personNr").val("");
+                $("#biltype").val("");
+                $("#bilmarke").val("");
+                $("#kjennetegn").val("");
+            }
+
+            function hentAlle(){
+                $.get("/listAlle",function (data){
+                    formaterData(data);
+                });
+            }
+
+            function formaterData(enBil){
+                let ut = "<table>" +
+                    "<tr>" +
+                    "<th>Personnr</th>" +
+                    "<th>Navn</th>"+
+                    "<th>Adresse</th>"+
+                    "<th>Kjennetegn</th>"+
+                    "<th>Merke</th>"+
+                    "<th>Type</th>"+
+                    "</tr>";
+
+                for (const Bil of enBil){
+                    ut += "<tr>" +
+                        "<td>"+Bil.personNr+"</td>" +
+                        "<td>"+Bil.navn+"</td>"+
+                        "<td>"+Bil.adresse+"</td>"+
+                        "<td>"+Bil.kjennetegn+"</td>"+
+                        "<td>"+Bil.merke+"</td>"+
+                        "<td>"+Bil.type+"</td>";
+                }
+                ut += "</table>";
+                $("#utListe").html(ut);
+            }
+
+            $("#slett").click(function (){
+                $.get("/slettAlle",function (data){
+                    hentAlle();
+                })
+            })
+
+        </script>
+</body>
+</html>
